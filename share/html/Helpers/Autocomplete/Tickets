@@ -83,7 +83,7 @@ my $CurrentUser = $session{'CurrentUser'};
 $m->abort unless $CurrentUser->Privileged;
 
 my %fields = %{ RT->Config->Get('TicketAutocompleteFields')
-                || { id => '=' } };
+                || { id => 'STARTSWITH' } };
 
 my $tickets = RT::Tickets->new( $CurrentUser );
 $tickets->RowsPerPage( $max );
