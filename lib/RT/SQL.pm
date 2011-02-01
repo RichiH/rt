@@ -212,6 +212,13 @@ sub _BitmaskToString {
     return join ' or ', @res;
 }
 
+sub Quote {
+    my $v = defined(wantarray)? \"$_[1]" : \$_[1];
+    $$v =~ s{(['\\])}{\\$1}g;
+    $$v = "'$$v'";
+    return $$v;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
