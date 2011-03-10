@@ -394,9 +394,6 @@ Meta Data:
 sub _IntLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
-    die "Invalid Operator $op for $field"
-        unless $op =~ /^(=|!=|>|<|>=|<=)$/;
-
     $sb->Limit(
         FIELD    => $field,
         VALUE    => $value,
