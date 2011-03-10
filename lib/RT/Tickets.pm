@@ -394,6 +394,21 @@ Meta Data:
 sub _IntLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
+    my $is_a_like = $op =~ /MATCHES|ENDSWITH|STARTSWITH|LIKE/;
+
+    # We want to support <id LIKE '1%'> for ticket autocomplete,
+    # but we need to explicitly typecast on Postgres
+    if ( $is_a_like && RT->Config->Get('DatabaseType') eq 'Pg' ) {
+        return $sb->_SQLLimit(
+            # XXX: Nasty hack
+            ALIAS    => 'CAST( main',
+            FIELD    => $field . ' AS TEXT)',
+            OPERATOR => $op,
+            VALUE    => $value,
+            @rest,
+        );
+    }
+
     $sb->Limit(
         FIELD    => $field,
         VALUE    => $value,
