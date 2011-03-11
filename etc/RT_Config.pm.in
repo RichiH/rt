@@ -1500,12 +1500,11 @@ Not all Ticket fields are publically accessible and hence won't work for
 autocomplete unless you override their accessibility using a local overlay or a
 plugin.  Out of the box the following fields are public: id, Subject.
 
-Default: C<< Set( $TicketAutocompleteFields, { id => 'STARTSWITH' })] ) >>
-
 =cut
 
 Set( $TicketAutocompleteFields, {
-    id => 'STARTSWITH',
+    id      => 'STARTSWITH',
+    Subject => 'LIKE',
 });
 
 =item C<$DisplayTicketAfterQuickCreate>
