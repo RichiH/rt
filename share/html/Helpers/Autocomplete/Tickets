@@ -87,21 +87,16 @@ my %fields = %{ RT->Config->Get('TicketAutocompleteFields')
                 || { id => 'STARTSWITH', Subject => 'LIKE' } };
 
 my $tickets = RT::Tickets->new( $CurrentUser );
-$tickets->RowsPerPage( $max );
 
+my @clauses;
 while (my ($name, $op) = each %fields) {
     $op = 'STARTSWITH'
         unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
-
-    $tickets->Limit(
-        FIELD           => $name,
-        OPERATOR        => $op,
-        VALUE           => $term,
-        ENTRYAGGREGATOR => 'OR',
-        SUBCLAUSE       => 'autocomplete',
-    );
+    push @clauses, qq{$name $op '$term'};
 }
-
+my $sql = join ' OR ', @clauses;
+$tickets->FromSQL($sql);
+$tickets->RowsPerPage( $max );
 # Exclude tickets we don't want
 foreach (split /\s*,\s*/, $exclude) {
     $tickets->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=');
