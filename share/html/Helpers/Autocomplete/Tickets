@@ -77,6 +77,9 @@ if ( defined $delim and length $delim ) {
     # If the field handles multiple values, pop the last one off
     $term = (split $delim, $term)[-1] if $term =~ $delim;
 }
+else {
+    $term = (split /\s+/, $term)[-1];
+}
 
 my $CurrentUser = $session{'CurrentUser'};
 
