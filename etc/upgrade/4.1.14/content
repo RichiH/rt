@@ -1,0 +1,32 @@
+use strict;
+use warnings;
+
+our @Scrips = ({
+    Description            => 'On SetStarted Open Ticket',
+    ScripCondition         => 'User Defined',
+    ScripAction            => 'User Defined',
+    Template               => 'Blank',
+
+    CustomIsApplicableCode => <<'    END_OF_CUSTOMISAPPLICABLECODE',
+return 0 unless $self->TransactionObj->Type eq "Set";
+return 0 unless $self->TransactionObj->Field eq "Started";
+return 1;
+    END_OF_CUSTOMISAPPLICABLECODE
+
+    CustomPrepareCode      => <<'    END_OF_CUSTOMPREPARECODE',
+my $ticket = $self->TicketObj;
+
+# We need $TicketAsSystem, in case the current user doesn't have ShowTicket
+my $TicketAsSystem = RT::Ticket->new(RT->SystemUser);
+$TicketAsSystem->Load( $ticket->Id );
+# Now that we're starting, open this ticket
+my $next = $TicketAsSystem->FirstActiveStatus;
+
+$ticket->SetStatus( $next ) if defined $next;
+
+return 1;
+    END_OF_CUSTOMPREPARECODE
+
+});
+
+1;
